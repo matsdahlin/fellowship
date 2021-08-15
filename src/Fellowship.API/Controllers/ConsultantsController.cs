@@ -1,23 +1,29 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Fellowship.API.Services;
 using Fellowship.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
-namespace DotnetLab.API.Controllers
+namespace Fellowship.API.Controllers
 {
   [ApiController]
   [Route("[controller]")]
   public class ConsultantsController : ControllerBase
   {
-    [HttpGet]
-    public IEnumerable<Consultant> Get()
+
+    private readonly IConfiguration _configuration;
+    private readonly IConsultantsService _consultantsService;
+
+    public ConsultantsController(IConsultantsService service)
     {
-      var consultants = new List<Consultant>();
-      consultants.Add(new Consultant
-      {
-        Name = "Leslie Nielsen",
-        ImageUrl = "https://en.wikipedia.org/wiki/Leslie_Nielsen#/media/File:Leslie_Nielsen.jpg",
-        Slug = "leslie-nielsen"
-      });
+      _consultantsService = service;
+    }
+
+    [HttpGet]
+    public async Task<IEnumerable<Consultant>> Get()
+    {
+      var consultants = await _consultantsService.GetConsultants();
 
       return consultants;
     }
