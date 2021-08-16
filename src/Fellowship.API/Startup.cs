@@ -24,6 +24,15 @@ namespace Fellowship.API
       services.AddSingleton<IScrapingService, ScrapingService>();
 
       services.AddHttpClient();
+      services.AddCors(options =>
+      {
+        options.AddPolicy("DevPolicy",
+         builder =>
+         {
+           builder.WithOrigins("*").WithMethods("GET");
+         });
+      });
+
       services.AddControllers();
       services.AddSwaggerGen(c =>
       {
@@ -39,9 +48,12 @@ namespace Fellowship.API
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fellowship.API v1"));
+        app.UseCors("DevPolicy");
       }
-
-      app.UseHttpsRedirection();
+      else
+      {
+        app.UseHttpsRedirection();
+      }
 
       app.UseRouting();
 
