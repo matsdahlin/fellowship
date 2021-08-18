@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fellowship.API.Services;
-using Fellowship.API.Models;
+using Fellowship.Services;
+using Fellowship.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-namespace Fellowship.API.Controllers
+namespace Fellowship.Controllers
 {
   [ApiController]
   [Route("[controller]")]

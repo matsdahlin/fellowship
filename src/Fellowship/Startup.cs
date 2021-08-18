@@ -1,4 +1,4 @@
-using Fellowship.API.Services;
+using Fellowship.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-namespace Fellowship.API
+namespace Fellowship
 {
   public class Startup
   {
@@ -28,7 +28,7 @@ namespace Fellowship.API
 
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fellowship.API", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fellowship", Version = "v1" });
       });
     }
 
@@ -39,7 +39,7 @@ namespace Fellowship.API
       {
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fellowship.API v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fellowship v1"));
       }
 
       app.UseHttpsRedirection();
