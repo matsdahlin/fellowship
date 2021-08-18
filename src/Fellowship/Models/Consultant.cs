@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Fellowship.API.Models
+namespace Fellowship.Models
 {
   public class Consultant
   {

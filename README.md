@@ -17,3 +17,7 @@
 - ### End-to-end testing (with an existing framework) **(2 pt)**
 
   This was chosen because I strongly believe that end-to-end testing is very valuable and delivers more "bang for the buck" than unit tests. Both are important, but if I have to choose only one testing strategy I would go for end-to-end tests.
+
+- ### Filter by name and office **(1 pt)**
+
+- ### Available on a free public url **(1 pt)**

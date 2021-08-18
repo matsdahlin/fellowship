@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fellowship.API.Models;
+using Fellowship.Models;
 
-namespace Fellowship.API.Services
+namespace Fellowship.Services
 {
   public interface IConsultantsService
   {

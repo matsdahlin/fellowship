@@ -5,9 +5,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
-using Fellowship.API.Models;
+using Fellowship.Models;
 
-namespace Fellowship.API.Services
+namespace Fellowship.Services
 {
   public class ScrapingService : IScrapingService
   {

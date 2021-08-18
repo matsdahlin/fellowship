@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fellowship.API.Models;
+using Fellowship.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
-namespace Fellowship.API.Services
+namespace Fellowship.Services
 {
   public class ConsultantsService : IConsultantsService
   {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Fellowship.API
+namespace Fellowship
 {
   public class Program
   {

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Fellowship.API": {
+    "Fellowship": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
