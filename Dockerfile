@@ -1,14 +1,19 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /source
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+EXPOSE 80
+EXPOSE 443
 
-COPY src/Fellowship/*.csproj ./fellowship/
-RUN dotnet restore ./fellowship/Fellowship.csproj
+ENV ConsultantScraper__0__TargetSite=https://tretton37.com/meet
 
-COPY src/Fellowship/. ./fellowship/
-WORKDIR /source/fellowship
-RUN dotnet publish -c release -o /app --no-restore
-
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /app
-COPY --from=build /app ./
+
+COPY ./src/Fellowship/Fellowship.csproj ./
+RUN dotnet restore "Fellowship.csproj"
+
+COPY ./src/Fellowship ./
+RUN dotnet publish "Fellowship.csproj" -c Release -o out
+
+FROM base
+WORKDIR /app
+COPY --from=build /app/out .
 ENTRYPOINT ["dotnet", "Fellowship.dll"]
