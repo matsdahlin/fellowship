@@ -16,6 +16,8 @@ steps:
     command: 'build'
     projects: 'src/Fellowship/Fellowship.csproj'
 
+
+
 - task: Docker@2
   inputs:
     containerRegistry: 'Docker Hub MD'
