@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Agron Kabashi",
+    "location": "🇸🇪 Lund",
+    "slug": "meet/agron-kabashi",
+    "imageUrl": "https://i.1337co.de/profile/agron-kabashi-medium"
+  },
+  {
+    "name": "Ahmad Mirzaei",
+    "location": "🇸🇪 Lund",
+    "slug": "meet/ahmad-mirzaei",
+    "imageUrl": "https://i.1337co.de/profile/ahmad-mirzaei-medium"
+  },
+  {
+    "name": "Ahmed Bazzara",
+    "location": "🇸🇪 Lund",
+    "slug": "meet/ahmed-bazzara",
+    "imageUrl": "https://i.1337co.de/profile/ahmed-bazzara-medium"
+  },
+  {
+    "name": "Alban Nurkollari",
+    "location": "🇸🇪 Helsingborg",
+    "slug": "meet/alban-nurkollari",
+    "imageUrl": "https://i.1337co.de/profile/alban-nurkollari-medium"
+  },
+  {
+    "name": "Aleksi Pohjolainen",
+    "location": "🇸🇪 Lund",
+    "slug": "meet/aleksi-pohjolainen",
+    "imageUrl": "https://i.1337co.de/profile/aleksi-pohjolainen-medium"
+  }
+]
