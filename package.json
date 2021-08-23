@@ -1,0 +1,26 @@
+{
+  "name": "fellowship",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "npx serve ./src/Fellowship/wwwroot",
+    "dev:api": "dotnet run --project ./src/Fellowship/Fellowship.csproj",
+    "cy:run": "npx cypress run --spec ./cypress/integration/fellowship.js",
+    "cy:open": "npx cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matsdahlin/fellowship.git"
+  },
+  "keywords": [],
+  "author": "Mats Dahlin <pm@matsdahlin.com> (https://matsdahlin.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matsdahlin/fellowship/issues"
+  },
+  "homepage": "https://github.com/matsdahlin/fellowship#readme",
+  "devDependencies": {
+    "cypress": "8.3.0"
+  }
+}

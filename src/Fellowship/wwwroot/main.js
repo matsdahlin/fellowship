@@ -41,7 +41,7 @@ function initializeApp(state = []) {
 
 function renderConsultants(consultants, domElement) {
   if (consultants.length === 0) {
-    domElement.innerHTML = '<h2>Inga träffar :(</h2>';
+    domElement.innerHTML = '<h2 data-cy="error-message">Inga träffar :(</h2>';
     return;
   }
 
@@ -52,7 +52,7 @@ function renderConsultants(consultants, domElement) {
         <img class="ninja-image" loading="lazy" src="${consultant.imageUrl}" alt="${consultant.name}" />
       </div>
       <article class="ninja-info">
-        <span>${consultant.name}</span>
+        <span data-cy="ninja-name">${consultant.name}</span>
         <span>Office: ${consultant.location}</span>
       </article>
   `;
@@ -68,7 +68,7 @@ function renderConsultants(consultants, domElement) {
 
 function renderErrorMessage(domElement) {
   domElement.innerHTML = `
-    <h1>Tyvärr, något gick fel</h1> 
+    <h2 data-cy="error-message">Tyvärr, något gick fel</h2> 
   `;
 }
 
