@@ -71,7 +71,13 @@ function initializeApp(state = { consultants: [] }) {
   uniqueLocations.forEach((location) => {
     const element = document.createElement('button');
     element.textContent = location;
+    element.classList.add('filter-location-button');
     element.addEventListener('click', (e) => {
+      const allFilterButtons = document.querySelectorAll('.filter-location-button');
+      allFilterButtons.forEach((filterButton) => filterButton.classList.remove('active'));
+      element.classList.add('active');
+
+      console.log('c', state.consultants);
       const filteredConsultants = filterConsultants('location', location);
       updateConsultants(filteredConsultants, appElement);
     });
@@ -98,7 +104,7 @@ function renderConsultants(consultants, domElement) {
     consultantsHTML =
       consultantsHTML +
       `
-    <article class="ninja-card" tabindex="0">
+    <article class="ninja-card">
       <a href="https://tretton37.com/${consultant.slug}" class="ninja-image-container">
         <img class="ninja-image" loading="lazy" src="${consultant.imageUrl}" alt="${consultant.name}" />
       </a>
