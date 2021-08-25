@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:frontend": "npx serve ./src/Fellowship/wwwroot",
-    "dev:api": "dotnet run --project ./src/Fellowship/Fellowship.csproj",
+    "dev": "dotnet watch run --project ./src/Fellowship/Fellowship.csproj",
     "cy:run": "npx cypress run --spec ./cypress/integration/fellowship.js",
     "cy:open": "npx cypress open"
   },

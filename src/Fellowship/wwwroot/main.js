@@ -1,78 +1,141 @@
+/**
+ * A consultant / ninja
+ * @typedef {Object} Consultant
+ * @property {string} name - name of consultant
+ * @property {string} slug - a unique slug for the consultant
+ * @property {string} location - office location
+ * @property {string} imageUrl - URL to image
+ */
+
+/**
+ * App state
+ * @typedef {Object} AppState
+ * @property {Array.<Consultant>} consultants - array of consultant objects
+ */
+
+/**
+ * function to bootstrap start of application
+ */
 async function startApp() {
   try {
-    const consultantsState = await fetch('/consultants')
+    /**
+     * @type {AppState}
+     */
+    const initialState = {
+      consultants: [],
+    };
+
+    const consultants = await fetch('/consultants')
       .then((data) => data.json())
       .then((json) => json);
 
-    const appDomElement = initializeApp(consultantsState);
-    renderConsultants(consultantsState, appDomElement);
+    initialState.consultants = consultants;
+    const appDomElement = initializeApp(initialState);
+    renderConsultants(initialState.consultants, appDomElement);
   } catch {
     renderErrorMessage(document.getElementById('cards-container'));
   }
 }
 
-function initializeApp(state = []) {
+/**
+ * initialize the app
+ * @param {Array.<Consultant>} state - consultant state
+ * @return {HTMLElement} app DOM element
+ */
+function initializeApp(state = { consultants: [] }) {
   const appElement = document.getElementById('cards-container');
-  const inputElement = document.getElementById('filter-input');
-  const filterButton = document.getElementById('filter-button');
 
-  const updateConsultants = debounce(renderConsultants);
-  function filterConsultants(filterQuery) {
-    return state.filter((consultant) => {
-      return consultant.name.toLowerCase().includes(filterQuery.toLowerCase());
+  function filterConsultants(propertyName, filterQuery) {
+    return state.consultants.filter((consultant) => {
+      return consultant[propertyName].toLowerCase().includes(filterQuery.toLowerCase());
     });
   }
 
-  // Typing handler
+  // Filter names
+  const inputElement = document.getElementById('filter-input');
   inputElement.addEventListener('keyup', (e) => {
-    const filtered = filterConsultants(e.currentTarget.value);
+    const filtered = filterConsultants('name', e.currentTarget.value);
     updateConsultants(filtered, appElement);
   });
 
-  // Filter button handler
-  filterButton.addEventListener('click', () => {
-    const filterQuery = document.getElementById('filter-input').value;
-    const filtered = filterConsultants(filterQuery);
-    renderConsultants(filtered, appElement);
+  // Filter locations
+  const filterLocationsElement = document.getElementById('filter-locations');
+  const locations = state.consultants.map((consultant) => {
+    const locationTrimmed = consultant.location
+      .substring(consultant.location.lastIndexOf(' ') + 1)
+      .toLowerCase();
+    return locationTrimmed;
+  });
+  const uniqueLocations = new Set(locations);
+
+  uniqueLocations.forEach((location) => {
+    const element = document.createElement('button');
+    element.textContent = location;
+    element.classList.add('filter-location-button');
+    element.addEventListener('click', (e) => {
+      const allFilterButtons = document.querySelectorAll('.filter-location-button');
+      allFilterButtons.forEach((filterButton) => filterButton.classList.remove('active'));
+      element.classList.add('active');
+
+      console.log('c', state.consultants);
+      const filteredConsultants = filterConsultants('location', location);
+      updateConsultants(filteredConsultants, appElement);
+    });
+    filterLocationsElement.appendChild(element);
   });
 
   return appElement;
 }
 
+/**
+ * render a list of consultants to a specified DOM element
+ * @param {Array.<Consultant>} consultants - array of consultant objects
+ * @param {HTMLElement} domElement - DOM element to render to
+ */
 function renderConsultants(consultants, domElement) {
   if (consultants.length === 0) {
-    domElement.innerHTML = '<h2 data-cy="error-message">Inga träffar :(</h2>';
+    renderErrorMessage(domElement, 'Inga träffar :(');
     return;
   }
 
-  domElement.innerHTML = '';
-  consultants.forEach((consultant, index) => {
-    const htmlTemplate = `
-      <div class="ninja-image-container">
+  let consultantsHTML = '';
+
+  consultants.forEach((consultant) => {
+    consultantsHTML =
+      consultantsHTML +
+      `
+    <article class="ninja-card">
+      <a href="https://tretton37.com/${consultant.slug}" class="ninja-image-container">
         <img class="ninja-image" loading="lazy" src="${consultant.imageUrl}" alt="${consultant.name}" />
-      </div>
-      <article class="ninja-info">
+      </a>
+      <div class="ninja-info">
         <span data-cy="ninja-name">${consultant.name}</span>
         <span>Office: ${consultant.location}</span>
-      </article>
+      </div>
+    </article>
   `;
-
-    const consultantNode = document.createElement('article');
-    consultantNode.classList.add('ninja-card');
-    consultantNode.setAttribute('tabindex', 0);
-    consultantNode.innerHTML = htmlTemplate;
-
-    domElement.appendChild(consultantNode);
   });
+
+  domElement.innerHTML = consultantsHTML;
 }
 
-function renderErrorMessage(domElement) {
+const updateConsultants = debounce(renderConsultants);
+
+/**
+ * render an error message to a specified DOM element
+ * @param {HTMLElement} domElement - DOM element to render to
+ * @param {string} message - message to render
+ */
+function renderErrorMessage(domElement, message = 'Oops! Något gick något fel.') {
   domElement.innerHTML = `
-    <h2 data-cy="error-message">Tyvärr, något gick fel</h2> 
+    <h2 data-cy="error-message">${message}</h2> 
   `;
 }
 
-function debounce(func, timeout = 300) {
+/**
+ * delay a function
+ */
+function debounce(func, timeout = 200) {
   let timer;
   return (...args) => {
     clearTimeout(timer);

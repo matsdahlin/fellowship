@@ -4,6 +4,6 @@ services:
     build: .
     ports:
       - '5000:80'
-    env_file: .local.env
+    env_file: .env.local
     volumes:
       - './src/Fellowship/wwwroot:/app/wwwroot'
