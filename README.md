@@ -2,13 +2,15 @@
 
 This is a small application that shows a list of consultants and lets the user filter the list by name and/or location.
 
-The backend in this application is a simple dotnet API written in C#, that scrapes the targeted site and returns the formatted data.
+The backend in this application is a dotnet API written in C#, that scrapes the targeted site and returns the formatted data.
 
-The frontend is a static HTML page with some vanilla CSS and JS.
+The frontend is a static HTML page with vanilla CSS and JS.
 
 [Cypress](https://www.cypress.io/) is used as a testing framework.
 
 The app is containerized, and gets built and deployed in Azure as a [Docker](https://www.docker.com/products/docker-desktop) container.
+
+Prettier was used for code formatting and JSDoc was used for type annotations.
 
 See [live demo](https://fellowship.azurewebsites.net) deployed to Azure (note: I used the free f1 tier, so the site can be slow to warm up during the first visit)
 
@@ -16,9 +18,10 @@ See [live demo](https://fellowship.azurewebsites.net) deployed to Azure (note: I
 
 ### Using Docker
 
-If you have docker installed you can easily run the project like this:
+If you have docker installed you can run the project like this:
 
-Copy `.env.example` and name it `.env.local`.
+Rename `.env.example` to `.env.local`.
+
 Run:
 `docker compose up`
 
