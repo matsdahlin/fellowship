@@ -1,3 +1,8 @@
+// Application DOM elements
+const appElement = document.getElementById('app');
+const cardsContainerElement = document.getElementById('cards-container');
+const filterLocationsElement = document.getElementById('filter-locations');
+
 /**
  * A consultant / ninja
  * @typedef {Object} Consultant
@@ -11,80 +16,131 @@
  * App state
  * @typedef {Object} AppState
  * @property {Array.<Consultant>} consultants - array of consultant objects
+ * @property {string} filter
  */
 
 /**
- * function to bootstrap start of application
+ * Function to bootstrap start of application
  */
 async function startApp() {
   try {
-    /**
-     * @type {AppState}
-     */
-    const initialState = {
-      consultants: [],
-    };
+    if (!appElement || !cardsContainerElement || !filterLocationsElement) {
+      throw new Error('could not find app element');
+    }
 
-    const consultants = await fetch('/consultants')
-      .then((data) => data.json())
-      .then((json) => json);
-
-    initialState.consultants = consultants;
-    const appDomElement = initializeApp(initialState);
-    renderConsultants(initialState.consultants, appDomElement);
-  } catch {
-    renderErrorMessage(document.getElementById('cards-container'));
+    const initialState = await initializeApp();
+    renderApplication(initialState);
+  } catch (error) {
+    console.error(error);
+    renderErrorMessage('Det gick inte att ladda applikationen', document.body);
   }
 }
 
 /**
- * initialize the app
- * @param {Array.<Consultant>} state - consultant state
- * @return {HTMLElement} app DOM element
+ * Initialize the app by hooking up the event handlers to the application state.
+ * @returns {Promise.<AppState>} - a promise that resolves to the initial state
  */
-function initializeApp(state = { consultants: [] }) {
-  const appElement = document.getElementById('cards-container');
+async function initializeApp() {
+  /**
+   * @type {Array.<Consultant>}
+   */
+  const consultants = await fetch('/consultants')
+    .then((data) => data.json())
+    .then((json) => json);
 
-  function filterConsultants(propertyName, filterQuery) {
-    return state.consultants.filter((consultant) => {
-      return consultant[propertyName].toLowerCase().includes(filterQuery.toLowerCase());
-    });
-  }
+  /**
+   * @type {AppState}
+   */
+  const state = {
+    consultants: consultants,
+    filters: {
+      location: '',
+      name: '',
+    },
+  };
 
-  // Filter names
-  const inputElement = document.getElementById('filter-input');
-  inputElement.addEventListener('keyup', (e) => {
-    const filtered = filterConsultants('name', e.currentTarget.value);
-    updateConsultants(filtered, appElement);
+  attachFilterInputHandlers(state);
+  attachLocationFilterHandlers(state);
+
+  return state;
+}
+
+/**
+ * Application render function.
+ * Filters consultants based on the current state of the application.
+ * @param {AppState} state - application state to render
+ */
+function renderApplication(state) {
+  const filteredConsultants = state.consultants.filter((consultant) => {
+    return (
+      keepConsultant(consultant, 'name', state.filters.name) &&
+      keepConsultant(consultant, 'location', state.filters.location)
+    );
   });
 
-  // Filter locations
-  const filterLocationsElement = document.getElementById('filter-locations');
-  const locations = state.consultants.map((consultant) => {
+  renderConsultants(filteredConsultants, cardsContainerElement);
+}
+
+/**
+ * Helper function to determine if a consultant should be kept based on the filter
+ * @param {Consultant} consultant - consultant to check
+ * @param {string} propertyName - name of the property on the consultant to check
+ * @param {string} value - value to match
+ *
+ * @returns {boolean} - true if the consultant should be kept, false otherwise
+ */
+function keepConsultant(consultant, propertyname, value) {
+  return consultant[propertyname]?.toLowerCase().includes(value?.toLowerCase());
+}
+
+/**
+ * @param {AppState} state - application state
+ */
+function attachFilterInputHandlers(state) {
+  const inputElement = document.getElementById('filter-input');
+  inputElement.addEventListener('keyup', (e) => {
+    state.filters.name = e.currentTarget.value;
+    renderApplication(state);
+  });
+}
+
+/**
+ * @param {AppState} state - application state
+ */
+function attachLocationFilterHandlers(state) {
+  const uniqueLocations = getUniqueLocations(state.consultants);
+
+  uniqueLocations.forEach((location) => {
+    const element = document.createElement('button');
+    element.textContent = location;
+    element.classList.add('filter-location-button');
+    element.addEventListener('click', () => {
+      const allFilterButtons = document.querySelectorAll('.filter-location-button');
+      allFilterButtons.forEach((filterButton) => filterButton.classList.remove('active'));
+      element.classList.add('active');
+
+      state.filters.location = location;
+      renderApplication(state);
+    });
+    filterLocationsElement.appendChild(element);
+  });
+}
+
+/**
+ * Helper function to get unique locations from a list of consultant objects
+ * @param {Array.<Consultant>} consultants - array of consultant objects
+ *
+ * @returns {Array.<string>} - array of unique locations
+ */
+function getUniqueLocations(consultants) {
+  const locations = consultants.map((consultant) => {
     const locationTrimmed = consultant.location
       .substring(consultant.location.lastIndexOf(' ') + 1)
       .toLowerCase();
     return locationTrimmed;
   });
   const uniqueLocations = new Set(locations);
-
-  uniqueLocations.forEach((location) => {
-    const element = document.createElement('button');
-    element.textContent = location;
-    element.classList.add('filter-location-button');
-    element.addEventListener('click', (e) => {
-      const allFilterButtons = document.querySelectorAll('.filter-location-button');
-      allFilterButtons.forEach((filterButton) => filterButton.classList.remove('active'));
-      element.classList.add('active');
-
-      console.log('c', state.consultants);
-      const filteredConsultants = filterConsultants('location', location);
-      updateConsultants(filteredConsultants, appElement);
-    });
-    filterLocationsElement.appendChild(element);
-  });
-
-  return appElement;
+  return uniqueLocations;
 }
 
 /**
@@ -94,7 +150,7 @@ function initializeApp(state = { consultants: [] }) {
  */
 function renderConsultants(consultants, domElement) {
   if (consultants.length === 0) {
-    renderErrorMessage(domElement, 'Inga träffar :(');
+    renderErrorMessage('Inga träffar :(', domElement);
     return;
   }
 
@@ -119,30 +175,15 @@ function renderConsultants(consultants, domElement) {
   domElement.innerHTML = consultantsHTML;
 }
 
-const updateConsultants = debounce(renderConsultants);
-
 /**
  * render an error message to a specified DOM element
- * @param {HTMLElement} domElement - DOM element to render to
  * @param {string} message - message to render
+ * @param {HTMLElement} domElement - DOM element to render to
  */
-function renderErrorMessage(domElement, message = 'Oops! Något gick något fel.') {
+function renderErrorMessage(message = 'Oops! Något gick något fel.', domElement) {
   domElement.innerHTML = `
     <h2 data-cy="error-message">${message}</h2> 
   `;
-}
-
-/**
- * delay a function
- */
-function debounce(func, timeout = 200) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, timeout);
-  };
 }
 
 startApp();
