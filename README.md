@@ -4,7 +4,7 @@ This is a small application that shows a list of consultants and lets the user f
 
 The backend in this application is a dotnet API written in C#, that scrapes the targeted site and returns the formatted data.
 
-The frontend is a static HTML page with vanilla CSS and JS.
+The frontend is a static HTML page with vanilla CSS and JS. The architecture is intended to separate state and rendered HTML into manageable pieces.
 
 [Cypress](https://www.cypress.io/) is used as a testing framework.
 
