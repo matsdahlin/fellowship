@@ -2,6 +2,8 @@
 const appElement = document.getElementById('app');
 const cardsContainerElement = document.getElementById('cards-container');
 const filterLocationsElement = document.getElementById('filter-locations');
+const filterClearButton = document.getElementById('filter-clear-button');
+const filterInputElement = document.getElementById('filter-input');
 
 /**
  * A consultant / ninja
@@ -13,10 +15,17 @@ const filterLocationsElement = document.getElementById('filter-locations');
  */
 
 /**
+ * Filters
+ * @typedef {Object} Filters
+ * @property {string} name - name of consultant to filter
+ * @property {string} location - location to filter
+ */
+
+/**
  * App state
  * @typedef {Object} AppState
  * @property {Array.<Consultant>} consultants - array of consultant objects
- * @property {string} filter
+ * @property {Filters} filters
  */
 
 /**
@@ -60,6 +69,7 @@ async function initializeApp() {
   };
 
   attachFilterInputHandlers(state);
+  attachFilterClearHandler(state);
   attachLocationFilterHandlers(state);
 
   return state;
@@ -70,15 +80,42 @@ async function initializeApp() {
  * Filters consultants based on the current state of the application.
  * @param {AppState} state - application state to render
  */
-function renderApplication(state) {
-  const filteredConsultants = state.consultants.filter((consultant) => {
+function renderApplication({ consultants, filters }) {
+  const filteredConsultants = consultants.filter((consultant) => {
     return (
-      keepConsultant(consultant, 'name', state.filters.name) &&
-      keepConsultant(consultant, 'location', state.filters.location)
+      keepConsultant(consultant, 'name', filters.name) &&
+      keepConsultant(consultant, 'location', filters.location)
     );
   });
 
+  filterInputElement.value = filters.name;
+  renderFilterArea(filters, filterClearButton);
   renderConsultants(filteredConsultants, cardsContainerElement);
+}
+
+/**
+ * @param {Filters} filters - filters to render
+ * @param {HTMLElement} domElement - DOM element to render to
+ */
+function renderFilterArea(filters, domElement) {
+  // should render if any filter prop is non-empty
+  const shouldRenderClearButton = Object.keys(filters).some((key) => filters[key] !== '');
+
+  if (shouldRenderClearButton) {
+    domElement.classList.remove('hidden');
+  } else {
+    domElement.classList.add('hidden');
+  }
+
+  // match location filter buttons to filter state
+  const allFilterButtons = Array.from(document.querySelectorAll('.filter-location-button'));
+  allFilterButtons.forEach((filterButton) => {
+    if (filterButton.textContent.toLowerCase() === filters.location) {
+      filterButton.classList.add('active');
+    } else {
+      filterButton.classList.remove('active');
+    }
+  });
 }
 
 /**
@@ -94,11 +131,22 @@ function keepConsultant(consultant, propertyname, value) {
 }
 
 /**
+ * Attach a handler to clear filter state
+ * @param {AppState} state - application state
+ */
+function attachFilterClearHandler(state) {
+  filterClearButton.addEventListener('click', () => {
+    state.filters.name = '';
+    state.filters.location = '';
+    renderApplication(state);
+  });
+}
+
+/**
  * @param {AppState} state - application state
  */
 function attachFilterInputHandlers(state) {
-  const inputElement = document.getElementById('filter-input');
-  inputElement.addEventListener('keyup', (e) => {
+  filterInputElement.addEventListener('keyup', (e) => {
     state.filters.name = e.currentTarget.value;
     renderApplication(state);
   });
@@ -114,11 +162,8 @@ function attachLocationFilterHandlers(state) {
     const element = document.createElement('button');
     element.textContent = location;
     element.classList.add('filter-location-button');
+    element.classList.add('button');
     element.addEventListener('click', () => {
-      const allFilterButtons = document.querySelectorAll('.filter-location-button');
-      allFilterButtons.forEach((filterButton) => filterButton.classList.remove('active'));
-      element.classList.add('active');
-
       state.filters.location = location;
       renderApplication(state);
     });
